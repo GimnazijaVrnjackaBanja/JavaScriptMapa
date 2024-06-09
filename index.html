@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktivna Mapa</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 700px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Interaktivna Mapa sa Markerima</h1>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Inicijalizacija mape
+        var map = L.map('map').setView([43.620896, 20.890819], 7); // Centrirano na Vrnjačku Banju, Srbija
+
+        // Dodavanje OpenStreetMap tile layer-a
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Dodavanje početnih markera
+        var marker1 = L.marker([43.620896, 20.890819]).addTo(map)
+            .bindPopup('<b>Pozdrav iz Vrnjačke Banje!</b><br />Ovo je Kliker kancelarija.').openPopup();
+
+        // Funkcija za dodavanje novog markera klikom na mapu
+        function onMapClick(e) {
+            // Prompt za unos opisa
+            var description = prompt("Unesite opis za marker:");
+
+            // Provera da li je unos prazan ili otkazan
+            if (description === null || description.trim() === "") {
+                description = "Bez opisa";
+            }
+
+            // Kreiranje HTML sadržaja za popup sa dugmetom za brisanje
+            var popupContent = description + '<br/><button class="remove-marker">Obriši marker</button>';
+
+            // Dodavanje novog markera sa unetim opisom i dugmetom za brisanje
+            var newMarker = L.marker(e.latlng).addTo(map)
+                .bindPopup(popupContent).openPopup();
+
+            // Dodavanje event listenera za dugme za brisanje kada se popup otvori
+            newMarker.on("popupopen", function() {
+                var removeButton = document.querySelector(".remove-marker");
+                L.DomEvent.on(removeButton, 'click', function() {
+                    map.removeLayer(newMarker);
+                });
+            });
+        }
+
+        // Dodavanje event listenera za klik na mapu
+        map.on('click', onMapClick);
+    </script>
+</body>
+</html>
+
